@@ -135,12 +135,14 @@
   .hero{
     position:relative;
     z-index:1;
-    padding:88px 0 60px;
+    padding-top:88px;
+    padding-bottom:60px;
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:56px;
     align-items:center;
   }
+  .hero > div{min-width:0;}
   .eyebrow-tag{
     display:inline-flex;
     align-items:center;
@@ -722,8 +724,10 @@
   /* ---------------- RESPONSIVE ---------------- */
   @media (max-width:900px){
     .hero, .tutor-grid, .community, .rep-wrap{grid-template-columns:1fr;}
+    .tutor-grid > *, .community > *, .rep-wrap > *{min-width:0;}
     .hero{padding-top:40px;}
     .hero h1{font-size:38px;}
+    .hero-stats{flex-wrap:wrap; row-gap:20px;}
     .steps{grid-template-columns:1fr;}
     .position-grid{grid-template-columns:1fr;}
     .stat-grid{grid-template-columns:1fr 1fr;}
@@ -845,14 +849,18 @@
       <div class="tutor-demo">
         <div class="tutor-demo-head">
           <span class="pulse-dot"></span>
-          <span>Escolha uma dúvida para ver a explicação</span>
+          <span>Pergunte ao tutor ou escolha um exemplo</span>
         </div>
         <div class="tutor-chips" id="tutorChips">
           <button class="tutor-chip active" data-q="0">Equação do 2º grau</button>
           <button class="tutor-chip" data-q="1">Lei de Ohm</button>
           <button class="tutor-chip" data-q="2">Estequiometria</button>
         </div>
-        <div class="tutor-output" id="tutorOutput"></div>
+        <div class="feed-compose" style="margin-top:0; padding-top:0; border-top:none;">
+          <input id="tutorInput" type="text" placeholder="Digite sua dúvida...">
+          <button id="tutorAskBtn">Perguntar</button>
+        </div>
+        <div class="tutor-output" id="tutorOutput" style="margin-top:14px;"></div>
       </div>
     </div>
   </div>
@@ -987,7 +995,29 @@
   ];
 
   const feedList = document.getElementById('feedList');
-  let questions = seedQuestions.map((q,i)=>({...q, id:i, liked:false}));
+
+  // ---------- PERSISTÊNCIA DO FEED (localStorage) ----------
+  // Guarda as perguntas só neste navegador/dispositivo, pra sobreviver
+  // a um recarregamento de página durante a feira.
+  const STORAGE_KEY = 'estudy_questions_v1';
+
+  function loadQuestions(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const saved = raw ? JSON.parse(raw) : null;
+      if(Array.isArray(saved) && saved.length) return saved;
+    }catch(e){
+      // localStorage bloqueado (ex: aba anônima) — segue com os dados padrão.
+    }
+    return seedQuestions.map((q,i)=>({...q, id:i, liked:false}));
+  }
+
+  function saveQuestions(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(questions)); }
+    catch(e){ /* sem espaço ou localStorage bloqueado — ignora */ }
+  }
+
+  let questions = loadQuestions();
 
   function tagColor(subject){
     return {matemática:'#34e0c4', física:'#7c6cff', química:'#ffbe4d', enem:'#ff8a8a'}[subject] || '#9aa0c7';
@@ -1039,6 +1069,7 @@
     const q = questions.find(q=>q.id===id);
     q.liked = !q.liked;
     q.likes += q.liked ? 1 : -1;
+    saveQuestions();
     const activeFilter = document.querySelector('.filter-chip.active').dataset.filter;
     renderFeed(activeFilter);
   });
@@ -1058,6 +1089,7 @@
       comments: 0,
       liked:false
     });
+    saveQuestions();
     composeInput.value = '';
     document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
     document.querySelector('.filter-chip[data-filter="todas"]').classList.add('active');
@@ -1101,25 +1133,87 @@
   ];
 
   const tutorOutput = document.getElementById('tutorOutput');
-  function renderTutor(idx){
-    const data = tutorData[idx];
-    tutorOutput.innerHTML = `<div class="tutor-question">${data.question}</div><ul class="tutor-steps"></ul>`;
+  const tutorInput = document.getElementById('tutorInput');
+
+  // Mostra uma lista de passos (vindos da IA ou de um exemplo fixo).
+  function renderTutorSteps(question, steps, note){
+    tutorOutput.innerHTML = `
+      ${note ? `<p style="font-size:12px;color:var(--muted);margin-bottom:10px;">${note}</p>` : ''}
+      <div class="tutor-question">${question}</div>
+      <ul class="tutor-steps"></ul>
+    `;
     const list = tutorOutput.querySelector('.tutor-steps');
-    data.steps.forEach((step, i)=>{
+    steps.forEach((step, i)=>{
       const li = document.createElement('li');
       li.style.animationDelay = (i*0.22)+'s';
       li.innerHTML = `<span class="num">${i+1}</span><span>${step}</span>`;
       list.appendChild(li);
     });
   }
+
+  function renderTutorLoading(question){
+    tutorOutput.innerHTML = `
+      <div class="tutor-question">${question}</div>
+      <p style="font-size:13px;color:var(--muted);">Pensando na melhor forma de explicar...</p>
+    `;
+  }
+
+  // Quebra o texto da IA em linhas pra reaproveitar a mesma lista numerada.
+  function answerToSteps(text){
+    return text.split('\n').map(l=>l.trim()).filter(Boolean);
+  }
+
+  // Pergunta pro tutor de IA (função serverless). Se não houver resposta
+  // (sem chave configurada, sem internet, etc), cai no exemplo fixo —
+  // assim a demonstração nunca trava na feira.
+  async function askTutor(question, fallbackIdx){
+    renderTutorLoading(question);
+    let data;
+    try{
+      const resp = await fetch('/api/tutor', {
+        method: 'POST',
+        headers: {'content-type': 'application/json'},
+        body: JSON.stringify({question})
+      });
+      data = await resp.json();
+    }catch(err){
+      data = {ok:false, error:'network_error'};
+    }
+
+    if(data && data.ok){
+      renderTutorSteps(question, answerToSteps(data.answer));
+      return;
+    }
+
+    if(typeof fallbackIdx === 'number'){
+      renderTutorSteps(question, tutorData[fallbackIdx].steps, '💡 Exemplo (tutor de IA indisponível agora)');
+    }else{
+      renderTutorSteps(question, ['Não consegui pensar nessa agora. Tente de novo em alguns segundos ou escolha um dos exemplos acima.']);
+    }
+  }
+
   document.getElementById('tutorChips').addEventListener('click',(e)=>{
     const chip = e.target.closest('.tutor-chip');
     if(!chip) return;
     document.querySelectorAll('.tutor-chip').forEach(c=>c.classList.remove('active'));
     chip.classList.add('active');
-    renderTutor(Number(chip.dataset.q));
+    const idx = Number(chip.dataset.q);
+    askTutor(tutorData[idx].question, idx);
   });
-  renderTutor(0);
+
+  function askCustomQuestion(){
+    const text = tutorInput.value.trim();
+    if(!text) return;
+    document.querySelectorAll('.tutor-chip').forEach(c=>c.classList.remove('active'));
+    askTutor(text);
+    tutorInput.value = '';
+  }
+  document.getElementById('tutorAskBtn').addEventListener('click', askCustomQuestion);
+  tutorInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') askCustomQuestion(); });
+
+  // Estado inicial: mostra o primeiro exemplo direto, sem precisar
+  // chamar a IA (a página já aparece "viva" assim que carrega).
+  renderTutorSteps(tutorData[0].question, tutorData[0].steps);
 
   // ---------- COUNTER ANIMATION ----------
   const counters = document.querySelectorAll('[data-count]');
