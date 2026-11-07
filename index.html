@@ -849,17 +849,23 @@
       <div class="tutor-demo">
         <div class="tutor-demo-head">
           <span class="pulse-dot"></span>
-          <span>Pergunte ao tutor ou escolha um exemplo</span>
+          <span>Escolha uma dúvida para ver a explicação</span>
         </div>
         <div class="tutor-chips" id="tutorChips">
           <button class="tutor-chip active" data-q="0">Equação do 2º grau</button>
           <button class="tutor-chip" data-q="1">Lei de Ohm</button>
           <button class="tutor-chip" data-q="2">Estequiometria</button>
         </div>
+        <!-- Campo de pergunta livre (digitar qualquer dúvida) fica escondido
+             por enquanto, porque sem crédito na API a IA real não responde.
+             Quando houver crédito configurado na Vercel, é só desfazer este
+             comentário pra reativar: o JS (askTutor/askCustomQuestion) já
+             está pronto, só espera o HTML voltar.
         <div class="feed-compose" style="margin-top:0; padding-top:0; border-top:none;">
           <input id="tutorInput" type="text" placeholder="Digite sua dúvida...">
           <button id="tutorAskBtn">Perguntar</button>
         </div>
+        -->
         <div class="tutor-output" id="tutorOutput" style="margin-top:14px;"></div>
       </div>
     </div>
@@ -1186,7 +1192,7 @@
     }
 
     if(typeof fallbackIdx === 'number'){
-      renderTutorSteps(question, tutorData[fallbackIdx].steps, '💡 Exemplo (tutor de IA indisponível agora)');
+      renderTutorSteps(question, tutorData[fallbackIdx].steps, '💡 Exemplo de explicação');
     }else{
       renderTutorSteps(question, ['Não consegui pensar nessa agora. Tente de novo em alguns segundos ou escolha um dos exemplos acima.']);
     }
@@ -1208,8 +1214,14 @@
     askTutor(text);
     tutorInput.value = '';
   }
-  document.getElementById('tutorAskBtn').addEventListener('click', askCustomQuestion);
-  tutorInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') askCustomQuestion(); });
+  // Campo de pergunta livre está escondido no HTML por enquanto (sem
+  // crédito na API). Esse "if" evita erro no console enquanto ele não
+  // existe na página — quando voltar, liga sozinho de novo.
+  const tutorAskBtn = document.getElementById('tutorAskBtn');
+  if(tutorInput && tutorAskBtn){
+    tutorAskBtn.addEventListener('click', askCustomQuestion);
+    tutorInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') askCustomQuestion(); });
+  }
 
   // Estado inicial: mostra o primeiro exemplo direto, sem precisar
   // chamar a IA (a página já aparece "viva" assim que carrega).
