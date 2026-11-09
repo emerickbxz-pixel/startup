@@ -86,6 +86,11 @@
     font-family:'Unbounded', sans-serif;
     font-weight:700;
     font-size:19px;
+    background:none;
+    border:none;
+    color:inherit;
+    cursor:pointer;
+    padding:0;
   }
   .logo-mark{
     width:30px; height:30px;
@@ -101,7 +106,15 @@
     font-size:14.5px;
     color:var(--muted);
   }
-  .nav-links a:hover{color:var(--text);}
+  .nav-links button{
+    background:none;
+    border:none;
+    font:inherit;
+    color:inherit;
+    cursor:pointer;
+    padding:0;
+  }
+  .nav-links button:hover, .nav-links button.active{color:var(--text);}
   .nav-cta{
     display:flex;
     align-items:center;
@@ -125,11 +138,16 @@
   }
   .btn-primary:hover{ transform:translateY(-1px); box-shadow:0 8px 24px rgba(238,240,251,0.18);}
   .btn-ghost{
+    background:transparent;
     color:var(--text);
     border-color:var(--line);
   }
   .btn-ghost:hover{border-color:var(--muted);}
   .mobile-only{display:none;}
+
+  /* ---------------- VIEWS (telas separadas, tipo um app) ---------------- */
+  .view{display:none;}
+  .view.active{display:block;}
 
   /* ---------------- HERO ---------------- */
   .hero{
@@ -137,12 +155,8 @@
     z-index:1;
     padding-top:88px;
     padding-bottom:60px;
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:56px;
-    align-items:center;
+    max-width:720px;
   }
-  .hero > div{min-width:0;}
   .eyebrow-tag{
     display:inline-flex;
     align-items:center;
@@ -162,7 +176,6 @@
   }
   .hero h1{
     font-size:52px;
-    max-width:560px;
   }
   .hero h1 .cyan{color:var(--cyan);}
   .hero-sub{
@@ -176,16 +189,21 @@
     margin-top:34px;
     display:flex;
     align-items:center;
-    gap:22px;
+    flex-wrap:wrap;
+    gap:14px;
   }
   .hero-note{
     font-size:13.5px;
     color:var(--muted);
+    width:100%;
+    margin-top:4px;
   }
   .hero-stats{
     margin-top:46px;
     display:flex;
+    flex-wrap:wrap;
     gap:34px;
+    row-gap:20px;
   }
   .hero-stat b{
     font-family:'Unbounded', sans-serif;
@@ -197,7 +215,7 @@
     color:var(--muted);
   }
 
-  /* ---- Live feed mock (hero right side) ---- */
+  /* ---- Feed / Marketplace: cartão com mockup de app ---- */
   .feed-shell{
     background:linear-gradient(180deg, var(--bg-panel), #0b0e2c);
     border:1px solid var(--line);
@@ -205,6 +223,7 @@
     padding:18px;
     box-shadow:0 30px 70px -30px rgba(0,0,0,0.7);
     position:relative;
+    max-width:640px;
   }
   .feed-shell::before{
     content:"";
@@ -251,7 +270,7 @@
   }
   .filter-chip:not(.active):hover{border-color:var(--muted); color:var(--text);}
 
-  .feed-list{
+  .feed-list, .market-list{
     display:flex;
     flex-direction:column;
     gap:10px;
@@ -259,8 +278,8 @@
     overflow-y:auto;
     padding:2px;
   }
-  .feed-list::-webkit-scrollbar{width:6px;}
-  .feed-list::-webkit-scrollbar-thumb{background:var(--line); border-radius:6px;}
+  .feed-list::-webkit-scrollbar, .market-list::-webkit-scrollbar{width:6px;}
+  .feed-list::-webkit-scrollbar-thumb, .market-list::-webkit-scrollbar-thumb{background:var(--line); border-radius:6px;}
 
   .q-card{
     background:var(--bg-panel-2);
@@ -295,6 +314,7 @@
     border-radius:var(--radius-pill);
     margin-left:auto;
     font-weight:600;
+    flex:none;
   }
   .q-body{
     font-size:13.5px;
@@ -358,6 +378,7 @@
     padding:100px 0;
     border-top:1px solid var(--line);
   }
+  .view > section:first-child{border-top:none;}
   .section-head{
     max-width:600px;
     margin-bottom:56px;
@@ -410,13 +431,6 @@
     color:var(--muted);
     font-size:14.5px;
     line-height:1.6;
-  }
-  .step-connector{
-    position:absolute;
-    top:15px;
-    right:-30px;
-    color:var(--line);
-    font-size:20px;
   }
 
   /* ---- Tutor de IA demo ---- */
@@ -484,7 +498,16 @@
     display:flex;
     gap:8px;
     flex-wrap:wrap;
-    margin-bottom:18px;
+    margin-bottom:14px;
+  }
+  .tutor-subject-label{
+    font-size:11.5px;
+    color:var(--muted);
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    margin-bottom:8px;
+    display:block;
   }
   .tutor-chip{
     padding:8px 14px;
@@ -493,6 +516,7 @@
     border:1px solid var(--line);
     font-size:12.5px;
     color:var(--text);
+    text-align:left;
   }
   .tutor-chip:hover{border-color:var(--violet);}
   .tutor-chip.active{background:var(--violet); border-color:var(--violet); color:#fff;}
@@ -537,6 +561,61 @@
     from{opacity:0; transform:translateX(-6px);}
     to{opacity:1; transform:translateX(0);}
   }
+
+  /* ---- Marketplace ---- */
+  .market-layout{
+    display:grid;
+    grid-template-columns:300px 1fr;
+    gap:32px;
+    align-items:start;
+  }
+  .market-publish{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius-card);
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    position:sticky;
+    top:90px;
+  }
+  .market-publish h4{font-size:14px; margin-bottom:2px;}
+  .market-publish input, .market-publish select{
+    width:100%;
+    background:var(--bg);
+    border:1px solid var(--line);
+    color:var(--text);
+    border-radius:10px;
+    padding:10px 12px;
+    font-size:13px;
+    font-family:inherit;
+  }
+  .market-publish input:focus, .market-publish select:focus{outline:none; border-color:var(--violet);}
+  .market-publish-row{display:flex; gap:8px;}
+  .market-publish-row select{flex:1; min-width:0;}
+  .market-publish button{
+    background:var(--violet);
+    color:#fff;
+    border:none;
+    border-radius:var(--radius-pill);
+    padding:11px 18px;
+    font-size:13px;
+    font-weight:600;
+    margin-top:4px;
+  }
+  .market-publish button:hover{background:#6a5aff;}
+  .market-list{max-height:none; overflow-y:visible;}
+  .market-link{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    margin-top:10px;
+    font-size:12px;
+    color:var(--cyan);
+    font-weight:600;
+  }
+  .market-link:hover{text-decoration:underline;}
 
   /* ---- Comunidade stats ---- */
   .community{
@@ -707,7 +786,7 @@
     max-width:460px;
     font-size:16px;
   }
-  .final-actions{display:flex; justify-content:center; gap:16px;}
+  .final-actions{display:flex; justify-content:center; flex-wrap:wrap; gap:16px;}
 
   footer{
     border-top:1px solid var(--line);
@@ -721,13 +800,43 @@
     z-index:1;
   }
 
+  /* ---------------- BOTTOM TABS (navegação do "app" no celular) ---------------- */
+  .bottom-tabs{
+    display:none;
+    position:fixed;
+    left:0; right:0; bottom:0;
+    z-index:60;
+    background:rgba(6,8,24,0.92);
+    backdrop-filter:blur(10px);
+    border-top:1px solid var(--line);
+    padding:8px 6px calc(8px + env(safe-area-inset-bottom, 0px));
+    gap:2px;
+  }
+  .bottom-tab{
+    flex:1;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:3px;
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-size:10px;
+    font-weight:600;
+    padding:6px 2px;
+    border-radius:10px;
+  }
+  .bottom-tab .icon{font-size:17px;}
+  .bottom-tab.active{color:var(--cyan);}
+
   /* ---------------- RESPONSIVE ---------------- */
   @media (max-width:900px){
-    .hero, .tutor-grid, .community, .rep-wrap{grid-template-columns:1fr;}
-    .tutor-grid > *, .community > *, .rep-wrap > *{min-width:0;}
+    .tutor-grid, .community, .rep-wrap, .market-layout{grid-template-columns:1fr;}
+    .tutor-grid > *, .community > *, .rep-wrap > *, .market-layout > *{min-width:0;}
+    .market-publish{position:static;}
     .hero{padding-top:40px;}
     .hero h1{font-size:38px;}
-    .hero-stats{flex-wrap:wrap; row-gap:20px;}
     .steps{grid-template-columns:1fr;}
     .position-grid{grid-template-columns:1fr;}
     .stat-grid{grid-template-columns:1fr 1fr;}
@@ -736,6 +845,8 @@
     .section-head h2{font-size:28px;}
     .final-cta h2{font-size:30px;}
     footer{flex-direction:column; gap:10px; text-align:center;}
+    .bottom-tabs{display:flex;}
+    body{padding-bottom:62px;}
   }
 </style>
 </head>
@@ -745,29 +856,34 @@
 
 <header>
   <nav>
-    <div class="logo">
+    <button class="logo" data-view-link="inicio">
       <span class="logo-mark">📡</span>
       E-Study
-    </div>
+    </button>
     <div class="nav-links">
-      <a href="#feed">Feed</a>
-      <a href="#tutor">Tutor de IA</a>
-      <a href="#comunidade">Comunidade</a>
-      <a href="#reputacao">Reputação</a>
+      <button data-view-link="feed">Feed</button>
+      <button data-view-link="tutor">Tutor de IA</button>
+      <button data-view-link="marketplace">Marketplace</button>
+      <button data-view-link="comunidade">Comunidade</button>
+      <button data-view-link="reputacao">Reputação</button>
     </div>
     <div class="nav-cta">
-      <a href="#feed" class="btn btn-primary">Ver demonstração</a>
+      <button class="btn btn-primary" data-view-link="feed">Ver demonstração</button>
     </div>
   </nav>
 </header>
 
-<section class="hero wrap" id="topo" style="border-top:none;">
-  <div>
+<!-- ======================= TELA: INÍCIO ======================= -->
+<div class="view active" data-view="inicio">
+
+  <section class="hero wrap" style="border-top:none;">
     <div class="eyebrow-tag"><span class="dot"></span> Protótipo de demonstração</div>
     <h1>Estude com quem também <span class="cyan">está aprendendo.</span></h1>
-    <p class="hero-sub">O E-Study transforma dúvidas em conversas: um feed onde você posta exercícios, recebe ajuda de outros estudantes e conta com um tutor de IA para reforçar o que ainda não ficou claro.</p>
+    <p class="hero-sub">O E-Study transforma dúvidas em conversas: um feed onde você posta exercícios, recebe ajuda de outros estudantes, troca materiais no marketplace e conta com um tutor de IA para reforçar o que ainda não ficou claro.</p>
     <div class="hero-actions">
-      <a href="#feed" class="btn btn-primary">Testar o feed ao vivo</a>
+      <button class="btn btn-primary" data-view-link="feed">Ver o feed</button>
+      <button class="btn btn-ghost" data-view-link="tutor">Testar o tutor de IA</button>
+      <button class="btn btn-ghost" data-view-link="marketplace">Ver marketplace</button>
       <span class="hero-note">Sem cadastro — é só uma demonstração</span>
     </div>
     <div class="hero-stats">
@@ -775,218 +891,321 @@
       <div class="hero-stat"><b>184</b><span>estudantes conectados</span></div>
       <div class="hero-stat"><b>87%</b><span>participação semanal</span></div>
     </div>
-  </div>
+  </section>
 
-  <div class="feed-shell" id="feed">
-    <div class="feed-shell-head">
-      <h3>💬 Feed de questões</h3>
-      <span style="font-size:12px; color:var(--muted);">ao vivo</span>
-    </div>
-    <div class="feed-filters" id="filters">
-      <button class="filter-chip active" data-filter="todas">Todas</button>
-      <button class="filter-chip" data-filter="matemática">Matemática</button>
-      <button class="filter-chip" data-filter="física">Física</button>
-      <button class="filter-chip" data-filter="química">Química</button>
-      <button class="filter-chip" data-filter="enem">ENEM</button>
-    </div>
-    <div class="feed-list" id="feedList"></div>
-    <div class="feed-compose">
-      <input id="composeInput" type="text" placeholder="Poste sua dúvida para a comunidade...">
-      <button id="composeBtn">Postar</button>
-    </div>
-  </div>
-</section>
-
-<section id="como-funciona">
-  <div class="wrap">
-    <div class="section-head">
-      <span class="kicker">Como funciona</span>
-      <h2>Três passos entre a dúvida e o entendimento</h2>
-      <p>Nada de vídeo-aula solitária. A plataforma conecta sua pergunta a pessoas e a uma IA que só entra depois que a comunidade já tentou ajudar.</p>
-    </div>
-    <div class="steps">
-      <div class="step-card">
-        <div class="step-num">01</div>
-        <h3>Poste sua dúvida</h3>
-        <p>Escreva ou tire uma foto do exercício. A questão entra no feed com matéria, dificuldade e tags de vestibular.</p>
+  <section id="como-funciona">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker">Como funciona</span>
+        <h2>Três passos entre a dúvida e o entendimento</h2>
+        <p>Nada de vídeo-aula solitária. A plataforma conecta sua pergunta a pessoas e a uma IA que só entra depois que a comunidade já tentou ajudar.</p>
       </div>
-      <div class="step-card">
-        <div class="step-num">02</div>
-        <h3>A comunidade responde</h3>
-        <p>Outros estudantes comentam, votam nas explicações mais claras e a melhor resposta sobe ao topo.</p>
-      </div>
-      <div class="step-card">
-        <div class="step-num">03</div>
-        <h3>A IA reforça o raciocínio</h3>
-        <p>Se ainda restar dúvida, o tutor de IA explica passo a passo, no seu nível, sem só entregar a resposta.</p>
+      <div class="steps">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <h3>Poste sua dúvida</h3>
+          <p>Escreva ou tire uma foto do exercício. A questão entra no feed com matéria, dificuldade e tags de vestibular.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <h3>A comunidade responde</h3>
+          <p>Outros estudantes comentam, votam nas explicações mais claras e a melhor resposta sobe ao topo.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <h3>A IA reforça o raciocínio</h3>
+          <p>Se ainda restar dúvida, o tutor de IA explica passo a passo, no seu nível, sem só entregar a resposta.</p>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section id="tutor">
-  <div class="wrap">
-    <div class="tutor-grid">
-      <div>
-        <span class="kicker">Tutor de IA</span>
-        <h2 style="font-size:32px; margin-bottom:24px;">Um coach que raciocina junto com você</h2>
-        <div class="tutor-points">
-          <div class="tutor-point">
-            <div class="tutor-icon">↳</div>
-            <div><h4>Explica no seu nível</h4><p>Ajusta a explicação a partir do que você já sabe, não de um roteiro fixo.</p></div>
+  <section id="posicionamento">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker">Posicionamento</span>
+        <h2>Feito por e para estudantes</h2>
+        <p>A plataforma é dividida em áreas bem definidas — feed, tutor, marketplace, comunidade — pra ser fácil de usar, não pra virar competição entre escolas.</p>
+      </div>
+      <div class="position-grid">
+        <div class="position-card no">
+          <h4>✕ O que não somos</h4>
+          <ul>
+            <li>"Transforme seus estudos em um jogo"</li>
+            <li>"Suba de nível como em um RPG"</li>
+            <li>"Derrote outras escolas"</li>
+          </ul>
+        </div>
+        <div class="position-card yes">
+          <h4>✓ O que somos</h4>
+          <ul>
+            <li>Um ambiente feito para estudantes</li>
+            <li>Aprenda com quem também está aprendendo</li>
+            <li>Sua escola, seus estudos, sua comunidade</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="final-cta" style="border-top:1px solid var(--line);">
+    <div class="wrap">
+      <h2>Pronto para ver como fica na sua escola?</h2>
+      <p>Esta é uma demonstração estática do produto. Explore as áreas do app pra testar cada parte.</p>
+      <div class="final-actions">
+        <button class="btn btn-primary" data-view-link="feed">Ir pro feed</button>
+        <button class="btn btn-ghost" data-view-link="marketplace">Ver marketplace</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ======================= TELA: FEED ======================= -->
+<div class="view" data-view="feed">
+  <section style="border-top:none;">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker">Feed</span>
+        <h2>Poste sua dúvida, ajude quem precisa</h2>
+        <p>Perguntas de toda a escola, em tempo real. Curta as melhores respostas e poste a sua.</p>
+      </div>
+      <div class="feed-shell">
+        <div class="feed-shell-head">
+          <h3>💬 Feed de questões</h3>
+          <span style="font-size:12px; color:var(--muted);">ao vivo</span>
+        </div>
+        <div class="feed-filters" id="filters">
+          <button class="filter-chip active" data-filter="todas">Todas</button>
+          <button class="filter-chip" data-filter="matemática">Matemática</button>
+          <button class="filter-chip" data-filter="física">Física</button>
+          <button class="filter-chip" data-filter="química">Química</button>
+          <button class="filter-chip" data-filter="enem">ENEM</button>
+        </div>
+        <div class="feed-list" id="feedList"></div>
+        <div class="feed-compose">
+          <input id="composeInput" type="text" placeholder="Poste sua dúvida para a comunidade...">
+          <button id="composeBtn">Postar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ======================= TELA: TUTOR DE IA ======================= -->
+<div class="view" data-view="tutor">
+  <section style="border-top:none;">
+    <div class="wrap">
+      <div class="tutor-grid">
+        <div>
+          <span class="kicker">Tutor de IA</span>
+          <h2 style="font-size:32px; margin-bottom:24px;">Um coach que raciocina junto com você</h2>
+          <div class="tutor-points">
+            <div class="tutor-point">
+              <div class="tutor-icon">↳</div>
+              <div><h4>Explica no seu nível</h4><p>Ajusta a explicação a partir do que você já sabe, não de um roteiro fixo.</p></div>
+            </div>
+            <div class="tutor-point">
+              <div class="tutor-icon">↳</div>
+              <div><h4>Raciocínio passo a passo</h4><p>Mostra o caminho até a resposta em vez de apenas entregá-la pronta.</p></div>
+            </div>
+            <div class="tutor-point">
+              <div class="tutor-icon">↳</div>
+              <div><h4>Identifica onde você travou</h4><p>Aponta o erro específico e sugere exatamente o que revisar.</p></div>
+            </div>
           </div>
-          <div class="tutor-point">
-            <div class="tutor-icon">↳</div>
-            <div><h4>Raciocínio passo a passo</h4><p>Mostra o caminho até a resposta em vez de apenas entregá-la pronta.</p></div>
-          </div>
-          <div class="tutor-point">
-            <div class="tutor-icon">↳</div>
-            <div><h4>Identifica onde você travou</h4><p>Aponta o erro específico e sugere exatamente o que revisar.</p></div>
-          </div>
         </div>
-      </div>
 
-      <div class="tutor-demo">
-        <div class="tutor-demo-head">
-          <span class="pulse-dot"></span>
-          <span>Escolha uma dúvida para ver a explicação</span>
-        </div>
-        <div class="tutor-chips" id="tutorChips">
-          <button class="tutor-chip active" data-q="0">Equação do 2º grau</button>
-          <button class="tutor-chip" data-q="1">Lei de Ohm</button>
-          <button class="tutor-chip" data-q="2">Estequiometria</button>
-        </div>
-        <!-- Campo de pergunta livre (digitar qualquer dúvida) fica escondido
-             por enquanto, porque sem crédito na API a IA real não responde.
-             Quando houver crédito configurado na Vercel, é só desfazer este
-             comentário pra reativar: o JS (askTutor/askCustomQuestion) já
-             está pronto, só espera o HTML voltar.
-        <div class="feed-compose" style="margin-top:0; padding-top:0; border-top:none;">
-          <input id="tutorInput" type="text" placeholder="Digite sua dúvida...">
-          <button id="tutorAskBtn">Perguntar</button>
-        </div>
-        -->
-        <div class="tutor-output" id="tutorOutput" style="margin-top:14px;"></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="comunidade">
-  <div class="wrap">
-    <div class="community">
-      <div>
-        <span class="kicker">Escolas e grupos</span>
-        <h2 style="font-size:32px; margin-bottom:16px;">Sua turma, sua escola, sua comunidade</h2>
-        <p style="color:var(--muted); font-size:15.5px; line-height:1.6; margin-bottom:32px; max-width:420px;">Cada escola tem seu próprio espaço, com turmas e núcleos temáticos onde o conhecimento é construído coletivamente.</p>
-        <div class="stat-grid">
-          <div class="stat-card"><b data-count="184">0</b><span>estudantes conectados</span></div>
-          <div class="stat-card"><b data-count="32">0</b><span>grupos ativos</span></div>
-          <div class="stat-card"><b data-count="1420">0</b><span>questões respondidas</span></div>
-          <div class="stat-card"><b data-count="87" data-suffix="%">0</b><span>participação semanal</span></div>
-        </div>
-      </div>
-      <div class="school-visual">
-        <div class="group-row">
-          <div class="avatar-stack">
-            <div class="avatar" style="background:var(--cyan);">JL</div>
-            <div class="avatar" style="background:var(--violet);">MS</div>
-            <div class="avatar" style="background:var(--gold);">RT</div>
+        <div class="tutor-demo">
+          <div class="tutor-demo-head">
+            <span class="pulse-dot"></span>
+            <span>Escolha a matéria e a dúvida</span>
           </div>
-          <div class="g-info"><b>3º ano B — Matemática</b><span>42 membros</span></div>
-          <div class="group-live"><span class="dot"></span>12 ativos</div>
-        </div>
-        <div class="group-row">
-          <div class="avatar-stack">
-            <div class="avatar" style="background:var(--violet);">CA</div>
-            <div class="avatar" style="background:var(--cyan);">PN</div>
+          <span class="tutor-subject-label">Matéria</span>
+          <div class="tutor-chips" id="tutorSubjectChips">
+            <button class="filter-chip active" data-subject="matemática">Matemática</button>
+            <button class="filter-chip" data-subject="física">Física</button>
+            <button class="filter-chip" data-subject="química">Química</button>
+            <button class="filter-chip" data-subject="enem">ENEM</button>
           </div>
-          <div class="g-info"><b>Núcleo ENEM — Redação</b><span>68 membros</span></div>
-          <div class="group-live"><span class="dot"></span>27 ativos</div>
+          <span class="tutor-subject-label">Dúvida</span>
+          <div class="tutor-chips" id="tutorChips"></div>
+          <div class="tutor-output" id="tutorOutput"></div>
         </div>
-        <div class="group-row">
-          <div class="avatar-stack">
-            <div class="avatar" style="background:var(--gold);">LF</div>
-            <div class="avatar" style="background:var(--cyan);">BR</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ======================= TELA: MARKETPLACE ======================= -->
+<div class="view" data-view="marketplace">
+  <section style="border-top:none;">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker">Marketplace</span>
+        <h2>Troque materiais com outros estudantes</h2>
+        <p>Suba resumos, listas de exercícios e mapas mentais — ou encontre o que outros colegas já compartilharam.</p>
+      </div>
+      <div class="market-layout">
+        <div class="market-publish">
+          <h4>Publicar material</h4>
+          <input id="materialTitle" type="text" placeholder="Título (ex: Resumo de Termoquímica)">
+          <div class="market-publish-row">
+            <select id="materialSubject">
+              <option value="matemática">Matemática</option>
+              <option value="física">Física</option>
+              <option value="química">Química</option>
+              <option value="enem">ENEM</option>
+            </select>
+            <select id="materialType">
+              <option>Resumo</option>
+              <option>Lista de exercícios</option>
+              <option>Mapa mental</option>
+              <option>Slides</option>
+            </select>
           </div>
-          <div class="g-info"><b>Química Geral</b><span>31 membros</span></div>
-          <div class="group-live"><span class="dot"></span>9 ativos</div>
+          <input id="materialLink" type="text" placeholder="Link do material (opcional)">
+          <button id="materialPublishBtn">Publicar material</button>
+        </div>
+        <div>
+          <div class="feed-filters" id="marketFilters" style="padding:0 0 14px;">
+            <button class="filter-chip active" data-filter="todas">Todos</button>
+            <button class="filter-chip" data-filter="matemática">Matemática</button>
+            <button class="filter-chip" data-filter="física">Física</button>
+            <button class="filter-chip" data-filter="química">Química</button>
+            <button class="filter-chip" data-filter="enem">ENEM</button>
+          </div>
+          <div class="market-list" id="marketList"></div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+</div>
 
-<section id="reputacao">
-  <div class="wrap">
-    <div class="rep-wrap">
-      <div class="badge-panel">
-        <div class="badge-trophy">🏆</div>
-        <h3>Reputação acadêmica</h3>
-        <p>Cada resposta útil constrói sua credibilidade dentro da comunidade.</p>
-        <div class="badge-stars">★★★★★</div>
-      </div>
-      <div>
-        <span class="kicker">Reputação</span>
-        <h2 style="font-size:32px; margin-bottom:8px;">Valorize quem ajuda</h2>
-        <p style="color:var(--muted); font-size:15px; margin-bottom:10px;">Um perfil de exemplo dentro da plataforma:</p>
-        <div class="rep-list">
-          <div class="rep-row"><span>Questões resolvidas</span><b>342</b></div>
-          <div class="rep-row"><span>Dúvidas respondidas</span><b>87</b></div>
-          <div class="rep-row"><span>Estudantes ajudados</span><b>64</b></div>
-          <div class="rep-row"><span>Nota de reputação</span><b>4,8 / 5</b></div>
+<!-- ======================= TELA: COMUNIDADE ======================= -->
+<div class="view" data-view="comunidade">
+  <section style="border-top:none;">
+    <div class="wrap">
+      <div class="community">
+        <div>
+          <span class="kicker">Escolas e grupos</span>
+          <h2 style="font-size:32px; margin-bottom:16px;">Sua turma, sua escola, sua comunidade</h2>
+          <p style="color:var(--muted); font-size:15.5px; line-height:1.6; margin-bottom:32px; max-width:420px;">Cada escola tem seu próprio espaço, com turmas e núcleos temáticos onde o conhecimento é construído coletivamente.</p>
+          <div class="stat-grid">
+            <div class="stat-card"><b data-count="184">0</b><span>estudantes conectados</span></div>
+            <div class="stat-card"><b data-count="32">0</b><span>grupos ativos</span></div>
+            <div class="stat-card"><b data-count="1420">0</b><span>questões respondidas</span></div>
+            <div class="stat-card"><b data-count="87" data-suffix="%">0</b><span>participação semanal</span></div>
+          </div>
+        </div>
+        <div class="school-visual">
+          <div class="group-row">
+            <div class="avatar-stack">
+              <div class="avatar" style="background:var(--cyan);">JL</div>
+              <div class="avatar" style="background:var(--violet);">MS</div>
+              <div class="avatar" style="background:var(--gold);">RT</div>
+            </div>
+            <div class="g-info"><b>3º ano B — Matemática</b><span>42 membros</span></div>
+            <div class="group-live"><span class="dot"></span>12 ativos</div>
+          </div>
+          <div class="group-row">
+            <div class="avatar-stack">
+              <div class="avatar" style="background:var(--violet);">CA</div>
+              <div class="avatar" style="background:var(--cyan);">PN</div>
+            </div>
+            <div class="g-info"><b>Núcleo ENEM — Redação</b><span>68 membros</span></div>
+            <div class="group-live"><span class="dot"></span>27 ativos</div>
+          </div>
+          <div class="group-row">
+            <div class="avatar-stack">
+              <div class="avatar" style="background:var(--gold);">LF</div>
+              <div class="avatar" style="background:var(--cyan);">BR</div>
+            </div>
+            <div class="g-info"><b>Química Geral</b><span>31 membros</span></div>
+            <div class="group-live"><span class="dot"></span>9 ativos</div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+</div>
 
-<section id="posicionamento">
-  <div class="wrap">
-    <div class="section-head">
-      <span class="kicker">Posicionamento</span>
-      <h2>Feito por e para estudantes</h2>
-      <p>A gamificação existe para manter o foco no aprendizado — não para virar competição entre escolas.</p>
-    </div>
-    <div class="position-grid">
-      <div class="position-card no">
-        <h4>✕ O que não somos</h4>
-        <ul>
-          <li>"Transforme seus estudos em um jogo"</li>
-          <li>"Suba de nível como em um RPG"</li>
-          <li>"Derrote outras escolas"</li>
-        </ul>
+<!-- ======================= TELA: REPUTAÇÃO ======================= -->
+<div class="view" data-view="reputacao">
+  <section style="border-top:none;">
+    <div class="wrap">
+      <div class="rep-wrap">
+        <div class="badge-panel">
+          <div class="badge-trophy">🏆</div>
+          <h3>Reputação acadêmica</h3>
+          <p>Cada resposta útil constrói sua credibilidade dentro da comunidade.</p>
+          <div class="badge-stars">★★★★★</div>
+        </div>
+        <div>
+          <span class="kicker">Reputação</span>
+          <h2 style="font-size:32px; margin-bottom:8px;">Valorize quem ajuda</h2>
+          <p style="color:var(--muted); font-size:15px; margin-bottom:10px;">Um perfil de exemplo dentro da plataforma:</p>
+          <div class="rep-list">
+            <div class="rep-row"><span>Questões resolvidas</span><b>342</b></div>
+            <div class="rep-row"><span>Dúvidas respondidas</span><b>87</b></div>
+            <div class="rep-row"><span>Estudantes ajudados</span><b>64</b></div>
+            <div class="rep-row"><span>Nota de reputação</span><b>4,8 / 5</b></div>
+          </div>
+        </div>
       </div>
-      <div class="position-card yes">
-        <h4>✓ O que somos</h4>
-        <ul>
-          <li>Um ambiente feito para estudantes</li>
-          <li>Aprenda com quem também está aprendendo</li>
-          <li>Sua escola, seus estudos, sua comunidade</li>
-        </ul>
-      </div>
     </div>
-  </div>
-</section>
-
-<section class="final-cta" style="border-top:1px solid var(--line);">
-  <div class="wrap">
-    <h2>Pronto para ver como fica na sua escola?</h2>
-    <p>Esta é uma demonstração estática do produto. Volte ao feed para testar a interação com perguntas e respostas.</p>
-    <div class="final-actions">
-      <a href="#feed" class="btn btn-primary">Voltar ao feed</a>
-      <a href="#topo" class="btn btn-ghost">Topo da página</a>
-    </div>
-  </div>
-</section>
+  </section>
+</div>
 
 <footer class="wrap">
   <span>© 2026 E-Study — protótipo de demonstração</span>
   <span>Estude. Ajude. Conecte-se. Evolua.</span>
 </footer>
 
+<!-- Navegação inferior (só aparece no celular), tipo a barra de telas
+     de um app de jogo (Clubes / Social / Partidas...), só que aqui
+     são as áreas do E-Study. -->
+<nav class="bottom-tabs" id="bottomTabs">
+  <button class="bottom-tab" data-view-link="inicio"><span class="icon">🏠</span>Início</button>
+  <button class="bottom-tab" data-view-link="feed"><span class="icon">💬</span>Feed</button>
+  <button class="bottom-tab" data-view-link="tutor"><span class="icon">🤖</span>Tutor</button>
+  <button class="bottom-tab" data-view-link="marketplace"><span class="icon">🛒</span>Market</button>
+  <button class="bottom-tab" data-view-link="comunidade"><span class="icon">👥</span>Turma</button>
+  <button class="bottom-tab" data-view-link="reputacao"><span class="icon">🏆</span>Rep</button>
+</nav>
+
 <script>
 (function(){
+  // ---------- AJUDANTE: escapar texto digitado por usuário ----------
+  // Evita que alguém digite HTML/script no título ou link do marketplace
+  // e isso rode na página de quem for ver depois.
+  function escapeHTML(str){
+    return String(str).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  }
+  function safeLink(url){
+    return /^https?:\/\//i.test(url) ? url : '';
+  }
+
+  // ==================================================================
+  // NAVEGAÇÃO ENTRE TELAS (Início / Feed / Tutor / Marketplace / ...)
+  // ==================================================================
+  const views = document.querySelectorAll('.view');
+  function switchView(name){
+    views.forEach(v => v.classList.toggle('active', v.dataset.view === name));
+    document.querySelectorAll('[data-view-link]').forEach(el => {
+      el.classList.toggle('active', el.dataset.viewLink === name && el.classList.contains('bottom-tab'));
+    });
+    document.querySelectorAll('.nav-links button').forEach(el=>{
+      el.classList.toggle('active', el.dataset.viewLink === name);
+    });
+    window.scrollTo(0, 0);
+    if(name === 'comunidade') animateCounters();
+  }
+  document.querySelectorAll('[data-view-link]').forEach(el=>{
+    el.addEventListener('click', ()=> switchView(el.dataset.viewLink));
+  });
+  switchView('inicio');
+
   // ---------- FEED DATA ----------
   const avatarColors = ['#34e0c4','#7c6cff','#ffbe4d','#ff8a8a','#6fd1ff'];
   function initials(name){ return name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
@@ -1063,7 +1282,7 @@
   document.getElementById('filters').addEventListener('click', (e)=>{
     const btn = e.target.closest('.filter-chip');
     if(!btn) return;
-    document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+    document.querySelectorAll('#filters .filter-chip').forEach(c=>c.classList.remove('active'));
     btn.classList.add('active');
     renderFeed(btn.dataset.filter);
   });
@@ -1076,7 +1295,7 @@
     q.liked = !q.liked;
     q.likes += q.liked ? 1 : -1;
     saveQuestions();
-    const activeFilter = document.querySelector('.filter-chip.active').dataset.filter;
+    const activeFilter = document.querySelector('#filters .filter-chip.active').dataset.filter;
     renderFeed(activeFilter);
   });
 
@@ -1097,8 +1316,8 @@
     });
     saveQuestions();
     composeInput.value = '';
-    document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
-    document.querySelector('.filter-chip[data-filter="todas"]').classList.add('active');
+    document.querySelectorAll('#filters .filter-chip').forEach(c=>c.classList.remove('active'));
+    document.querySelector('#filters .filter-chip[data-filter="todas"]').classList.add('active');
     renderFeed('todas');
   }
   composeBtn.addEventListener('click', postQuestion);
@@ -1106,40 +1325,186 @@
 
   renderFeed('todas');
 
-  // ---------- TUTOR DEMO ----------
-  const tutorData = [
-    {
-      question:'Como resolvo x² − 5x + 6 = 0 usando Bhaskara?',
-      steps:[
-        'Identifique os coeficientes: <b>a = 1, b = −5, c = 6</b>.',
-        'Calcule o discriminante: <b>Δ = b² − 4ac = 25 − 24 = 1</b>.',
-        'Como Δ > 0, a equação tem duas raízes reais diferentes.',
-        'Aplique a fórmula: <b>x = (−b ± √Δ) / 2a</b>, ou seja, x = (5 ± 1) / 2.',
-        'As raízes são <b>x = 3</b> e <b>x = 2</b>. Confira substituindo na equação original.'
-      ]
-    },
-    {
-      question:'Qual a diferença entre corrente contínua e alternada?',
-      steps:[
-        'Na corrente contínua (CC), os elétrons fluem sempre no <b>mesmo sentido</b> — é o que uma pilha fornece.',
-        'Na corrente alternada (CA), o sentido do fluxo <b>se inverte periodicamente</b> — é o que sai da tomada.',
-        'Pense na CC como uma esteira rolante e na CA como um pêndulo indo e voltando.',
-        'Por isso a CA é mais eficiente para transportar energia por longas distâncias.'
-      ]
-    },
-    {
-      question:'Como faço estequiometria a partir de massa, não de mol?',
-      steps:[
-        'Primeiro converta a massa em mol usando <b>n = massa / massa molar</b>.',
-        'Depois use a proporção da equação balanceada entre os mols dos reagentes.',
-        'Se precisar, converta o resultado de volta para massa multiplicando pela massa molar do produto.',
-        'Dica: escreva sempre a equação balanceada antes de calcular — é o erro mais comum.'
-      ]
-    }
+  // ==================================================================
+  // MARKETPLACE — trocar materiais de estudo (resumos, listas, mapas
+  // mentais...). Igual ao feed, guarda tudo só neste navegador.
+  // ==================================================================
+  const MARKET_STORAGE_KEY = 'estudy_materials_v1';
+
+  const seedMaterials = [
+    {author:'Beatriz Ramos', subject:'matemática', type:'Resumo', title:'Resumo completo de Bhaskara e funções do 2º grau', link:''},
+    {author:'Lucas Ferreira', subject:'física', type:'Mapa mental', title:'Mapa mental das Leis de Newton', link:''},
+    {author:'Marina Sousa', subject:'química', type:'Lista de exercícios', title:'20 questões de estequiometria resolvidas passo a passo', link:''},
+    {author:'Carla Andrade', subject:'enem', type:'Resumo', title:'Guia de conectivos pra redação nota 1000', link:''},
   ];
 
+  function loadMaterials(){
+    try{
+      const raw = localStorage.getItem(MARKET_STORAGE_KEY);
+      const saved = raw ? JSON.parse(raw) : null;
+      if(Array.isArray(saved) && saved.length) return saved;
+    }catch(e){ /* localStorage bloqueado — segue com os dados padrão */ }
+    return seedMaterials.map((m,i)=>({...m, id:i}));
+  }
+  function saveMaterials(){
+    try{ localStorage.setItem(MARKET_STORAGE_KEY, JSON.stringify(materials)); }
+    catch(e){ /* sem espaço ou bloqueado — ignora */ }
+  }
+  let materials = loadMaterials();
+
+  const marketList = document.getElementById('marketList');
+  function renderMarket(filter){
+    marketList.innerHTML = '';
+    const items = filter === 'todas' ? materials : materials.filter(m => m.subject === filter);
+    if(items.length === 0){
+      marketList.innerHTML = '<p style="color:var(--muted); font-size:13px; text-align:center; padding:30px 0;">Nenhum material nessa matéria ainda. Seja o primeiro a publicar!</p>';
+      return;
+    }
+    items.slice().reverse().forEach(m=>{
+      const card = document.createElement('div');
+      card.className = 'q-card';
+      const color = avatarColors[m.id % avatarColors.length];
+      const tc = tagColor(m.subject);
+      const link = safeLink(m.link);
+      card.innerHTML = `
+        <div class="q-top">
+          <div class="avatar" style="background:${color};">${initials(m.author)}</div>
+          <div class="q-meta"><b>${escapeHTML(m.author)}</b> · ${m.subject}</div>
+          <span class="tag" style="background:${tc}22; color:${tc};">${escapeHTML(m.type)}</span>
+        </div>
+        <div class="q-body"><b>${escapeHTML(m.title)}</b></div>
+        ${link ? `<a class="market-link" href="${escapeHTML(link)}" target="_blank" rel="noopener noreferrer">🔗 Abrir material</a>` : ''}
+      `;
+      marketList.appendChild(card);
+    });
+  }
+
+  document.getElementById('marketFilters').addEventListener('click', (e)=>{
+    const btn = e.target.closest('.filter-chip');
+    if(!btn) return;
+    document.querySelectorAll('#marketFilters .filter-chip').forEach(c=>c.classList.remove('active'));
+    btn.classList.add('active');
+    renderMarket(btn.dataset.filter);
+  });
+
+  const materialTitle = document.getElementById('materialTitle');
+  const materialSubject = document.getElementById('materialSubject');
+  const materialType = document.getElementById('materialType');
+  const materialLink = document.getElementById('materialLink');
+  document.getElementById('materialPublishBtn').addEventListener('click', ()=>{
+    const title = materialTitle.value.trim();
+    if(!title) return;
+    materials.push({
+      id: materials.length,
+      author: 'Você',
+      subject: materialSubject.value,
+      type: materialType.value,
+      title,
+      link: materialLink.value.trim()
+    });
+    saveMaterials();
+    materialTitle.value = '';
+    materialLink.value = '';
+    document.querySelectorAll('#marketFilters .filter-chip').forEach(c=>c.classList.remove('active'));
+    document.querySelector('#marketFilters .filter-chip[data-filter="todas"]').classList.add('active');
+    renderMarket('todas');
+  });
+
+  renderMarket('todas');
+
+  // ==================================================================
+  // TUTOR DE IA — perguntas prontas organizadas por matéria, com
+  // chamada real pra IA (função serverless) e fallback pros exemplos.
+  // ==================================================================
+  const tutorData = {
+    'matemática': [
+      {
+        question:'Como resolvo x² − 5x + 6 = 0 usando Bhaskara?',
+        steps:[
+          'Identifique os coeficientes: <b>a = 1, b = −5, c = 6</b>.',
+          'Calcule o discriminante: <b>Δ = b² − 4ac = 25 − 24 = 1</b>.',
+          'Como Δ > 0, a equação tem duas raízes reais diferentes.',
+          'Aplique a fórmula: <b>x = (−b ± √Δ) / 2a</b>, ou seja, x = (5 ± 1) / 2.',
+          'As raízes são <b>x = 3</b> e <b>x = 2</b>. Confira substituindo na equação original.'
+        ]
+      },
+      {
+        question:'Log de base diferente de 10, como faço a mudança de base?',
+        steps:[
+          'A fórmula é: <b>log_a(b) = log_c(b) / log_c(a)</b>, onde c é uma base que você já sabe calcular (geralmente 10).',
+          'Exemplo: pra calcular log₂(8), mude pra base 10: <b>log₂(8) = log(8) / log(2)</b>.',
+          'Como log(8) ≈ 0,903 e log(2) ≈ 0,301, o resultado é 0,903 / 0,301 = <b>3</b>.',
+          'Confira: 2³ = 8, então log₂(8) = 3 está correto.'
+        ]
+      }
+    ],
+    'física': [
+      {
+        question:'Qual a diferença entre corrente contínua e alternada?',
+        steps:[
+          'Na corrente contínua (CC), os elétrons fluem sempre no <b>mesmo sentido</b> — é o que uma pilha fornece.',
+          'Na corrente alternada (CA), o sentido do fluxo <b>se inverte periodicamente</b> — é o que sai da tomada.',
+          'Pense na CC como uma esteira rolante e na CA como um pêndulo indo e voltando.',
+          'Por isso a CA é mais eficiente para transportar energia por longas distâncias.'
+        ]
+      },
+      {
+        question:'Numa questão de MRUV, quando eu uso Torricelli em vez da equação horária?',
+        steps:[
+          'Use <b>Torricelli</b> (v² = v₀² + 2aΔs) quando o tempo não é dado nem pedido na questão.',
+          'Use a <b>equação horária</b> (s = s₀ + v₀t + at²/2) quando o tempo aparece no enunciado ou é o que você precisa descobrir.',
+          'Dica rápida: se a palavra "tempo" não aparece em nenhum lugar da questão, é quase certeza que é Torricelli.',
+          'Depois de calcular, sempre confira as unidades (m/s, m/s², m) pra não errar por conversão.'
+        ]
+      }
+    ],
+    'química': [
+      {
+        question:'Como faço estequiometria a partir de massa, não de mol?',
+        steps:[
+          'Primeiro converta a massa em mol usando <b>n = massa / massa molar</b>.',
+          'Depois use a proporção da equação balanceada entre os mols dos reagentes.',
+          'Se precisar, converta o resultado de volta para massa multiplicando pela massa molar do produto.',
+          'Dica: escreva sempre a equação balanceada antes de calcular — é o erro mais comum.'
+        ]
+      },
+      {
+        question:'Como calculo o pH de uma solução?',
+        steps:[
+          'A relação é: <b>pH + pOH = 14</b> (em soluções aquosas, a 25°C).',
+          'Pra achar o pH, use: <b>pH = −log[H⁺]</b>, onde [H⁺] é a concentração de íons hidrogênio.',
+          'Quanto menor o pH, mais ácida a solução; quanto maior, mais básica.',
+          'Exemplo: se [H⁺] = 10⁻³ mol/L, então pH = <b>3</b> (ácido).'
+        ]
+      }
+    ],
+    'enem': [
+      {
+        question:'Quais conectivos uso pra passar de um parágrafo pro outro na redação?',
+        steps:[
+          'Pra <b>adicionar</b> uma ideia: "além disso", "ademais", "outrossim".',
+          'Pra <b>contrastar</b> ideias: "entretanto", "no entanto", "por outro lado".',
+          'Pra indicar <b>consequência</b>: "dessa forma", "portanto", "por conseguinte".',
+          'Dica: nunca repita o mesmo conectivo duas vezes no texto — isso derruba a nota de coesão.'
+        ]
+      },
+      {
+        question:'Como estruturo a proposta de intervenção da redação do ENEM?',
+        steps:[
+          'Ela precisa ter 5 elementos: <b>ação, agente, modo/meio, finalidade e detalhamento</b>.',
+          'Exemplo de ação: "o Ministério da Educação deveria criar..." (agente = Ministério da Educação).',
+          'O detalhamento explica melhor um desses elementos — é o que mais gente esquece de fazer.',
+          'Sempre retome o tema da redação na proposta, não fale de um assunto genérico.'
+        ]
+      }
+    ]
+  };
+  const tutorSubjects = ['matemática','física','química','enem'];
+
   const tutorOutput = document.getElementById('tutorOutput');
-  const tutorInput = document.getElementById('tutorInput');
+  const tutorSubjectChips = document.getElementById('tutorSubjectChips');
+  const tutorChips = document.getElementById('tutorChips');
+  let currentTutorSubject = 'matemática';
 
   // Mostra uma lista de passos (vindos da IA ou de um exemplo fixo).
   function renderTutorSteps(question, steps, note){
@@ -1170,9 +1535,9 @@
   }
 
   // Pergunta pro tutor de IA (função serverless). Se não houver resposta
-  // (sem chave configurada, sem internet, etc), cai no exemplo fixo —
-  // assim a demonstração nunca trava na feira.
-  async function askTutor(question, fallbackIdx){
+  // (sem crédito, sem internet, etc), cai no exemplo pronto — assim a
+  // demonstração nunca trava na feira.
+  async function askTutor(question, fallbackSteps){
     renderTutorLoading(question);
     let data;
     try{
@@ -1191,66 +1556,68 @@
       return;
     }
 
-    if(typeof fallbackIdx === 'number'){
-      renderTutorSteps(question, tutorData[fallbackIdx].steps, '💡 Exemplo de explicação');
+    if(fallbackSteps){
+      renderTutorSteps(question, fallbackSteps, '💡 Exemplo de explicação');
     }else{
       renderTutorSteps(question, ['Não consegui pensar nessa agora. Tente de novo em alguns segundos ou escolha um dos exemplos acima.']);
     }
   }
 
-  document.getElementById('tutorChips').addEventListener('click',(e)=>{
-    const chip = e.target.closest('.tutor-chip');
+  function renderTutorQuestionChips(){
+    tutorChips.innerHTML = tutorData[currentTutorSubject].map((item,i)=>
+      `<button class="tutor-chip${i===0?' active':''}" data-i="${i}">${item.question}</button>`
+    ).join('');
+  }
+
+  function selectSubject(subject){
+    currentTutorSubject = subject;
+    document.querySelectorAll('#tutorSubjectChips .filter-chip').forEach(c=>{
+      c.classList.toggle('active', c.dataset.subject === subject);
+    });
+    renderTutorQuestionChips();
+    const first = tutorData[subject][0];
+    askTutor(first.question, first.steps);
+  }
+
+  tutorSubjectChips.addEventListener('click', (e)=>{
+    const chip = e.target.closest('.filter-chip');
     if(!chip) return;
-    document.querySelectorAll('.tutor-chip').forEach(c=>c.classList.remove('active'));
-    chip.classList.add('active');
-    const idx = Number(chip.dataset.q);
-    askTutor(tutorData[idx].question, idx);
+    selectSubject(chip.dataset.subject);
   });
 
-  function askCustomQuestion(){
-    const text = tutorInput.value.trim();
-    if(!text) return;
-    document.querySelectorAll('.tutor-chip').forEach(c=>c.classList.remove('active'));
-    askTutor(text);
-    tutorInput.value = '';
-  }
-  // Campo de pergunta livre está escondido no HTML por enquanto (sem
-  // crédito na API). Esse "if" evita erro no console enquanto ele não
-  // existe na página — quando voltar, liga sozinho de novo.
-  const tutorAskBtn = document.getElementById('tutorAskBtn');
-  if(tutorInput && tutorAskBtn){
-    tutorAskBtn.addEventListener('click', askCustomQuestion);
-    tutorInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') askCustomQuestion(); });
-  }
+  tutorChips.addEventListener('click', (e)=>{
+    const chip = e.target.closest('.tutor-chip');
+    if(!chip) return;
+    document.querySelectorAll('#tutorChips .tutor-chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    const item = tutorData[currentTutorSubject][Number(chip.dataset.i)];
+    askTutor(item.question, item.steps);
+  });
 
-  // Estado inicial: mostra o primeiro exemplo direto, sem precisar
-  // chamar a IA (a página já aparece "viva" assim que carrega).
-  renderTutorSteps(tutorData[0].question, tutorData[0].steps);
+  // Estado inicial: mostra o primeiro exemplo de Matemática direto, sem
+  // precisar chamar a IA (a tela já aparece "viva" assim que abre).
+  renderTutorQuestionChips();
+  renderTutorSteps(tutorData[currentTutorSubject][0].question, tutorData[currentTutorSubject][0].steps);
 
-  // ---------- COUNTER ANIMATION ----------
-  const counters = document.querySelectorAll('[data-count]');
-  const counterObserver = new IntersectionObserver((entries)=>{
-    entries.forEach(entry=>{
-      if(entry.isIntersecting){
-        const el = entry.target;
-        const target = Number(el.dataset.count);
-        const suffix = el.dataset.suffix || '';
-        let current = 0;
-        const duration = 900;
-        const start = performance.now();
-        function tick(now){
-          const progress = Math.min((now-start)/duration, 1);
-          current = Math.floor(progress * target);
-          el.textContent = current + suffix;
-          if(progress < 1) requestAnimationFrame(tick);
-          else el.textContent = target + suffix;
-        }
-        requestAnimationFrame(tick);
-        counterObserver.unobserve(el);
+  // ---------- CONTADOR ANIMADO (tela Comunidade) ----------
+  // Como as telas agora trocam em vez de rolar, o contador roda toda
+  // vez que a pessoa abre a tela "Comunidade" (não precisa mais de
+  // scroll pra disparar).
+  function animateCounters(){
+    document.querySelectorAll('[data-count]').forEach(el=>{
+      const target = Number(el.dataset.count);
+      const suffix = el.dataset.suffix || '';
+      const duration = 900;
+      const start = performance.now();
+      function tick(now){
+        const progress = Math.min((now-start)/duration, 1);
+        el.textContent = Math.floor(progress * target) + suffix;
+        if(progress < 1) requestAnimationFrame(tick);
+        else el.textContent = target + suffix;
       }
+      requestAnimationFrame(tick);
     });
-  }, {threshold:0.4});
-  counters.forEach(c=>counterObserver.observe(c));
+  }
 })();
 </script>
 
