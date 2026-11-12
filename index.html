@@ -22,6 +22,7 @@
   }
 
   *{box-sizing:border-box;}
+  [hidden]{display:none !important;}
   html{scroll-behavior:smooth;}
   body{
     margin:0;
@@ -1019,7 +1020,7 @@
         <div class="tutor-demo">
           <div class="tutor-demo-head">
             <span class="pulse-dot"></span>
-            <span>Escolha a matéria e a dúvida</span>
+            <span>Escolha a matéria e veja a explicação</span>
           </div>
           <span class="tutor-subject-label">Matéria</span>
           <div class="tutor-chips" id="tutorSubjectChips">
@@ -1027,9 +1028,18 @@
             <button class="filter-chip" data-subject="física">Física</button>
             <button class="filter-chip" data-subject="química">Química</button>
             <button class="filter-chip" data-subject="enem">ENEM</button>
+            <button class="filter-chip" data-subject="cálculo">Cálculo</button>
+            <button class="filter-chip" data-subject="hidráulica">Hidráulica</button>
+            <button class="filter-chip" data-subject="resistência">Resistência dos Materiais</button>
           </div>
-          <span class="tutor-subject-label">Dúvida</span>
+          <span class="tutor-subject-label" id="tutorQuestionLabel">Dúvida</span>
           <div class="tutor-chips" id="tutorChips"></div>
+          <span class="tutor-subject-label" id="professorLabel" hidden>Professor</span>
+          <div class="tutor-chips" id="professorChips" hidden>
+            <button class="tutor-chip active" data-prof="padrao">Padrão</button>
+            <button class="tutor-chip" data-prof="steve">⛏️ Steve (Minecraft)</button>
+            <button class="tutor-chip" data-prof="walter">🕶️ Walter White</button>
+          </div>
           <div class="tutor-output" id="tutorOutput"></div>
         </div>
       </div>
@@ -1501,6 +1511,85 @@
   };
   const tutorSubjects = ['matemática','física','química','enem'];
 
+  // ---------- MATÉRIAS DE ENGENHARIA (resumo, sem precisar de IA) ----------
+  // Pedido da investidora: conteúdo de engenharia (difícil de achar por
+  // aí) + a explicação contada com a temática de um personagem. Como é
+  // conteúdo fixo (não depende de rede/chave de API), funciona 100% na
+  // hora da apresentação, mesmo offline.
+  const engineeringSubjects = ['cálculo','hidráulica','resistência'];
+  const engineeringData = {
+    'cálculo': {
+      topic: 'O que é Cálculo?',
+      summaries: {
+        padrao: [
+          'Cálculo é a área da matemática que estuda como as coisas mudam — taxas de variação e acúmulo.',
+          'A <b>derivada</b> mede o quão rápido algo muda num instante (ex: velocidade é a derivada da posição).',
+          'A <b>integral</b> faz o caminho inverso: soma infinitos pedacinhos pra calcular área, volume ou acúmulo total.',
+          'Derivada e integral são a base de praticamente toda engenharia, física e economia.'
+        ],
+        steve: [
+          'Cálculo é tipo minerar em modo avançado: em vez de contar bloco por bloco, a gente descobre a <b>taxa</b> com que as coisas mudam.',
+          'A derivada é como checar sua velocidade de mineração <b>nesse exato momento</b> — não a média do dia inteiro, o agora.',
+          'A integral é o contrário: se eu sei minha velocidade a cada segundo, dá pra somar tudo e descobrir quantos blocos eu minerei no total — tipo juntar inventário aos poucos até lotar a bag.',
+          'Todo engenheiro usa isso pra construir coisas que não desabam. É literalmente a crafting table da engenharia.'
+        ],
+        walter: [
+          'Cálculo não é sobre números fixos. É sobre <b>mudança</b> — crescimento, decaimento, transformação. Como uma reação que nunca para.',
+          'A derivada é a <b>taxa de reação</b> num instante exato — o quão rápido sua substância está se transformando agora, não na média.',
+          'A integral é o <b>rendimento acumulado</b>: se você conhece a taxa a cada instante, soma tudo e descobre o produto final.',
+          'Sem entender a taxa de mudança, você não controla o resultado. E controle, meu caro, é tudo.'
+        ]
+      }
+    },
+    'hidráulica': {
+      topic: 'O que é Hidráulica?',
+      summaries: {
+        padrao: [
+          'Hidráulica estuda como líquidos se comportam em movimento e em repouso, e como usar essa força pra fazer trabalho.',
+          'O princípio central é o de <b>Pascal</b>: a pressão aplicada em um líquido se transmite igualmente em todas as direções.',
+          'Por isso um pistão pequeno empurrando óleo consegue levantar um carro inteiro num elevador — a força se multiplica conforme a área aumenta.',
+          'É a base de freios de carro, guindastes, escavadeiras e praticamente toda máquina pesada.'
+        ],
+        steve: [
+          'Hidráulica é tipo mexer com água no jogo, só que levando a física a sério: em vez de só soltar um balde, a gente calcula a pressão que ela faz.',
+          'Líquido parado empurra igual em todas as direções — essa é a lei de Pascal, tipo uma regra universal do mundo.',
+          'Com isso dá pra montar uma prensa gigante: um empurrão pequeno de um lado levanta um peso enorme do outro, sem precisar de nenhum redstone.',
+          'É assim que escavadeira e elevador de verdade funcionam — um mecanismo que usa líquido em vez de circuito pra fazer o trabalho pesado.'
+        ],
+        walter: [
+          'Todo líquido sob pressão faz a mesma coisa que uma reação num sistema fechado: distribui essa pressão igualmente, sem exceção. É a lei de Pascal.',
+          'Um pistão pequeno, com a pressão certa, controla um sistema inteiro — a mesma lógica de controlar uma reação com a quantidade exata de reagente.',
+          'É assim que se multiplica força: pouca pressão numa área pequena vira muita força numa área grande. Escala é tudo.',
+          'No laboratório ou na oficina, o princípio é o mesmo: entenda a pressão do sistema, e você controla o resultado.'
+        ]
+      }
+    },
+    'resistência': {
+      topic: 'O que é Resistência dos Materiais?',
+      summaries: {
+        padrao: [
+          'Resistência dos materiais estuda o quanto um material aguenta antes de deformar ou quebrar, quando sofre uma força.',
+          'O conceito central é a <b>tensão</b> (força dividida pela área) — quanto menor a área, maior a tensão pra mesma força.',
+          'Até um certo ponto o material se deforma e <b>volta ao normal</b> (deformação elástica); depois de um limite, a deformação é <b>permanente</b> — e além de outro limite, ele rompe.',
+          'É esse cálculo que garante que uma ponte, um prédio ou uma viga aguentem o peso sem ceder.'
+        ],
+        steve: [
+          'Resistência dos materiais é tipo testar quantos blocos de TNT uma construção aguenta antes de desabar — só que calculado, não por tentativa e erro.',
+          'O que importa não é só a força aplicada, é a <b>área</b> que recebe essa força: um pilar fino quebra com menos peso que um pilar grosso, mesmo carregando a mesma coisa.',
+          'Até um ponto, a estrutura aguenta e volta ao normal — tipo um bloco de slime. Passou do limite, ela racha de vez, tipo vidro quebrando: não tem como desfazer com um clique.',
+          'É esse cálculo que separa uma construção que fica de pé de uma que desaba. Nenhum engenheiro de verdade constrói "no olho".'
+        ],
+        walter: [
+          'Todo material tem um limite — assim como todo processo tem uma margem antes de sair do controle. Resistência dos materiais é entender exatamente onde fica essa linha.',
+          'O que importa não é só a força, é a <b>concentração</b> dela: a mesma força numa área pequena gera uma tensão muito maior. Pureza e precisão, sempre.',
+          'Dentro do limite elástico, o material absorve o impacto e volta ao normal. Ultrapasse esse limite, e a mudança é permanente — não tem reação reversa depois disso.',
+          'Respeite os limites do material, e ele sustenta qualquer estrutura. Ignore, e o colapso é garantido.'
+        ]
+      }
+    }
+  };
+  let currentProfessor = 'padrao';
+
   const tutorOutput = document.getElementById('tutorOutput');
   const tutorSubjectChips = document.getElementById('tutorSubjectChips');
   const tutorChips = document.getElementById('tutorChips');
@@ -1569,14 +1658,33 @@
     ).join('');
   }
 
+  // Resumo de engenharia (Cálculo/Hidráulica/Resistência): conteúdo fixo,
+  // sem chamada de rede — reformulado na hora conforme o "professor"
+  // escolhido (Padrão, Steve ou Walter White).
+  function renderEngineeringSummary(subject){
+    const data = engineeringData[subject];
+    renderTutorSteps(data.topic, data.summaries[currentProfessor]);
+  }
+
   function selectSubject(subject){
     currentTutorSubject = subject;
     document.querySelectorAll('#tutorSubjectChips .filter-chip').forEach(c=>{
       c.classList.toggle('active', c.dataset.subject === subject);
     });
-    renderTutorQuestionChips();
-    const first = tutorData[subject][0];
-    askTutor(first.question, first.steps);
+
+    const isEngineering = engineeringSubjects.includes(subject);
+    tutorQuestionLabel.hidden = isEngineering;
+    tutorChips.hidden = isEngineering;
+    professorLabel.hidden = !isEngineering;
+    professorChips.hidden = !isEngineering;
+
+    if(isEngineering){
+      renderEngineeringSummary(subject);
+    }else{
+      renderTutorQuestionChips();
+      const first = tutorData[subject][0];
+      askTutor(first.question, first.steps);
+    }
   }
 
   tutorSubjectChips.addEventListener('click', (e)=>{
@@ -1592,6 +1700,18 @@
     chip.classList.add('active');
     const item = tutorData[currentTutorSubject][Number(chip.dataset.i)];
     askTutor(item.question, item.steps);
+  });
+
+  const tutorQuestionLabel = document.getElementById('tutorQuestionLabel');
+  const professorLabel = document.getElementById('professorLabel');
+  const professorChips = document.getElementById('professorChips');
+  professorChips.addEventListener('click', (e)=>{
+    const chip = e.target.closest('.tutor-chip');
+    if(!chip) return;
+    document.querySelectorAll('#professorChips .tutor-chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    currentProfessor = chip.dataset.prof;
+    renderEngineeringSummary(currentTutorSubject);
   });
 
   // Estado inicial: mostra o primeiro exemplo de Matemática direto, sem
